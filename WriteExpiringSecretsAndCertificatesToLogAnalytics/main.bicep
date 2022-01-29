@@ -3,13 +3,13 @@
 param automationAccountName string
 
 @description('Runbook Uri')
-param runbookUri string = 'https://raw.githubusercontent.com/daniellindemann/azure-automation/WriteExpiringSecretsAndCertificatesToLogAnalytics/WriteExpiringSecretsAndCertificatesToLogAnalytics.ps1'
+param runbookUri string = 'https://raw.githubusercontent.com/daniellindemann/azure-automation/development/WriteExpiringSecretsAndCertificatesToLogAnalytics/WriteExpiringSecretsAndCertificatesToLogAnalytics.ps1'
 
 @description('Schedule start time')
 param scheduleStartTime string = dateTimeAdd(utcNow(), 'PT1H', 'o')
 
-@description('Create storage account, if not existing')
-param createStorageAccount bool = false
+// @description('Create storage account, if not existing')
+// param createStorageAccount bool = false
 
 var location = resourceGroup().location
 var runbookName = replace(substring(runbookUri, lastIndexOf(runbookUri, '/') + 1), '.ps1', '')
