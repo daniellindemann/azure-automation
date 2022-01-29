@@ -42,35 +42,52 @@ $timeStampField = "TimeStamp"
 $logType = "AppRegistrationExpiration"
 
 Write-Output "Retrieving apps and secret information ..."
+$azResourcesModuleMajorVersion = (Get-Module -ListAvailable -Name Az.Resources).Version.Major
 $applications = Get-AzADApplication
 $appWithCredentials = @()
 $appWithCredentials += $applications | ForEach-Object {
     $application = $_
     Write-Verbose ('Fetching information for application {0}' -f $application.DisplayName)
 
-    $application | Get-AzADAppCredential | Select-Object `
-        -Property @{ Name='DisplayName'; Expression={$application.DisplayName} }, `
-        @{ Name='ObjectId'; Expression={$application.Id} }, `
-        @{ Name='AppId'; Expression={$application.AppId} }, `
-        @{ Name='KeyId'; Expression={$_.KeyId} }, `
-        @{ Name='StartDate'; Expression={$_.StartDateTime} }, `
-        @{ Name='EndDate'; Expression={$_.EndDateTime} }
+    $appCredentials = $application | Get-AzADAppCredential
 
-    # TODO: get certificates?
+    # the response objects for applications and app credentials changed from version 4 to version 5 of the Az.Resources module (which includes the cmdlets Get-AzADApplication and Get-AzADAppCredential)
+    # in the time of writing the version 5.2.0 of the Az.Resources module was used
+    # Azure Automation used version 4.4.0 during this time
+    if($azResourcesModuleMajorVersion -ge 5) {
+        $appCredentials | Select-Object `
+            -Property @{ Name='DisplayName'; Expression={$application.DisplayName} }, `
+            @{ Name='ObjectId'; Expression={$application.Id} }, `
+            @{ Name='AppId'; Expression={$application.AppId} }, `
+            @{ Name='KeyId'; Expression={$_.KeyId} }, `
+            @{ Name='Type'; Expression={$_.Type} }, `
+            @{ Name='StartDate'; Expression={$_.StartDateTime} }, `
+            @{ Name='EndDate'; Expression={$_.EndDateTime} }
+    }
+    else {
+        $appCredentials | Select-Object `
+            -Property @{ Name='DisplayName'; Expression={$application.DisplayName} }, `
+            @{ Name='ObjectId'; Expression={$application.ObjectId} }, `
+            @{ Name='AppId'; Expression={$application.ApplicationId} }, `
+            @{ Name='KeyId'; Expression={$_.KeyId} }, `
+            @{ Name='Type'; Expression={$_.Type} }, `
+            @{ Name='StartDate'; Expression={$_.StartDate -as [datetime]} }, `
+            @{ Name='EndDate'; Expression={$_.EndDate -as [datetime]} }
+    }
 }
 
 $today = (Get-Date).ToUniversalTime()
 $timestamp = $today.ToString('o')
 $appWithCredentials | ForEach-Object {
     $days = ($_.EndDate - $Today).Days
+
+    $_ | Add-Member -MemberType NoteProperty -Name $timeStampField -Value $timestamp -Force
+    $_ | Add-Member -MemberType NoteProperty -Name 'DaysToExpiration' -Value $days -Force
+
     if($_.EndDate -lt $today) {
         $_ | Add-Member -MemberType NoteProperty -Name 'Status' -Value 'Expired' -Force
-        $_ | Add-Member -MemberType NoteProperty -Name $timeStampField -Value $timestamp -Force
-        $_ | Add-Member -MemberType NoteProperty -Name 'DaysToExpiration' -Value $days -Force
     }  else {
         $_ | Add-Member -MemberType NoteProperty -Name 'Status' -Value 'Valid' -Force
-        $_ | Add-Member -MemberType NoteProperty -Name $timeStampField -Value $timestamp -Force
-        $_ | Add-Member -MemberType NoteProperty -Name 'DaysToExpiration' -Value $days -Force
     }
 }
 
