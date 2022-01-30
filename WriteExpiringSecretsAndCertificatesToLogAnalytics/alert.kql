@@ -1,0 +1,5 @@
+AppRegistrationExpiration_CL
+| summarize arg_max(TimeGenerated,*) by KeyId_g
+| where DaysToExpiration_d <= 30 // Change this value to the expiration threshold
+| where TimeGenerated > ago(1d)
+| project TimeGenerated, DisplayName_s, AppId_Guid_g, KeyId_g, Type_s, Status_s, DaysToExpiration_d, StartDate_t = iff(isnull(StartDate_t), StartDate_value_t, StartDate_t), EndDate_t = iff(isnull(EndDate_t), EndDate_value_t, EndDate_t)
