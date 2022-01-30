@@ -58,11 +58,11 @@ $appWithCredentials += $applications | ForEach-Object {
         $appCredentials | Select-Object `
             -Property @{ Name='DisplayName'; Expression={$application.DisplayName} }, `
             @{ Name='ObjectId'; Expression={$application.Id} }, `
-            @{ Name='AppId'; Expression={$application.AppId} }, `
+            @{ Name='AppId'; Expression={$application.AppId -as [guid]} }, `
             @{ Name='KeyId'; Expression={$_.KeyId} }, `
             @{ Name='Type'; Expression={$_.Type} }, `
-            @{ Name='StartDate'; Expression={$_.StartDateTime} }, `
-            @{ Name='EndDate'; Expression={$_.EndDateTime} }
+            @{ Name='StartDate'; Expression={$_.StartDateTime -as [datetime]} }, `
+            @{ Name='EndDate'; Expression={$_.EndDateTime -as [datetime]} }
     }
     else {
         $appCredentials | Select-Object `
