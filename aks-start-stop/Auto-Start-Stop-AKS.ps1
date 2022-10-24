@@ -1,11 +1,10 @@
 <#
     .DESCRIPTION
-        Runbook to start and stop AKS clusters using the Managed Identity.
-        The runbook checks for the existance of specific tags to control start and stop actions
+        An example runbook which gets all the ARM resources using the Managed Identity
 
     .NOTES
-        AUTHOR: Daniel Lindemann
-        LASTEDIT: Oct 18, 2022
+        AUTHOR: Azure Automation Team
+        LASTEDIT: Oct 26, 2021
 #>
 
 <#
@@ -57,6 +56,7 @@ if(!$LocalTest) {
     }
 }
 
+"Add variables"
 $timeUtc = (Get-Date).ToUniversalTime()
 $currentDay = $timeUtc.ToString('ddd')
 $isoDateStringTemplate = $timeUtc.ToString('yyyy-MM-ddT')
@@ -76,6 +76,12 @@ function StartStopCluster {
         $powerState = $aksCluster.PowerState.Code   # can be Stopped and Started
         $provisioningState = $aksCluster.ProvisioningState  # can be Succeeded
 
+		$resourceGroup = $aksCluster.ResourceGroupName  # when executing via automation account, the resource group will not be fetched, so get it via regex from the id
+        if(!$resourceGroup) {
+            $regex = [regex] "\/resourcegroups\/([A-Za-z0-9\-_]{1,})\/"
+            $resourceGroup = $regex.Match($aksCluster.Id).Groups[1].Value
+        }
+
         if($null -ne $businessHoursStart -and $null -ne $businessHoursEnd) {
             $startDate = [DateTime]::Parse($isoDateStringTemplate + $businessHoursStart)
             $stopDate = [DateTime]::Parse($isoDateStringTemplate + $businessHoursEnd)
@@ -86,9 +92,9 @@ function StartStopCluster {
                 $businessHoursDays.Contains($currentDay) -and
                 $powerState -ne 'Running' -and
                 $provisioningState -eq 'Succeeded') {
-                    Start-AzAksCluster -Name $aksCluster.Name -ResourceGroupName $aksCluster.ResourceGroupName
-                    "Started AKS $($aksCluster.Name) in resource group $($aksCluster.ResourceGroupName)"
-                }
+                    Start-AzAksCluster -Name $aksCluster.Name -ResourceGroupName $resourceGroup
+                    "Started AKS $($aksCluster.Name) in resource group $resourceGroup"
+            }
             
             # check if aks should be stopped
             if(($timeUtc -ge $stopDate -or
@@ -96,19 +102,21 @@ function StartStopCluster {
                 $businessHoursDays.Contains($currentDay) -and
                 $powerState -ne 'Stopped' -and
                 $provisioningState -eq 'Succeeded') {
-                    Stop-AzAksCluster -Name $aksCluster.Name -ResourceGroupName $aksCluster.ResourceGroupName
-                    "Stopped AKS $($aksCluster.Name) in resource group $($aksCluster.ResourceGroupName)"
-                }
+                    Stop-AzAksCluster -Name $aksCluster.Name -ResourceGroupName $resourceGroup
+                    "Stopped AKS $($aksCluster.Name) in resource group $resourceGroup"
+            }
         }
     }
 }
 
 if(!$ClusterName) {
+	"Run for all clusters in subscription"
     # Loop through aks clusters in the subsription
     $aksClusters = Get-AzAksCluster
     StartStopCluster $aksClusters
 }
 else {
+	"Run for specific cluster"
     # stop/stop specific cluster
     $specificCluster = Get-AzAksCluster -Name $ClusterName -ResourceGroupName $ResourceGroupName
     StartStopCluster @($specificCluster)

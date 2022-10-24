@@ -29,7 +29,8 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"ms-vscode.PowerShell"
+				"ms-vscode.PowerShell",
+				"ms-azuretools.vscode-bicep"
 			]
 		}
 	}
