@@ -56,7 +56,6 @@ if(!$LocalTest) {
     }
 }
 
-"Add variables"
 $timeUtc = (Get-Date).ToUniversalTime()
 $currentDay = $timeUtc.ToString('ddd')
 $isoDateStringTemplate = $timeUtc.ToString('yyyy-MM-ddT')
@@ -70,6 +69,9 @@ function StartStopCluster {
     foreach ($aksCluster in $clusters) {
         # get data
         $businessHoursDays = $aksCluster.Tags[$TagNameBusinessHoursDays]
+        if(!$businessHoursDays) {
+            $businessHoursDays = $DefaultTagBusinessHoursDays
+        }
         $businessHoursStart = $aksCluster.Tags[$TagNameBusinessHoursStart]
         $businessHoursEnd = $aksCluster.Tags[$TagNameBusinessHoursEnd]
 

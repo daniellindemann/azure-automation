@@ -1,0 +1,262 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.12.40.16777",
+      "templateHash": "16678804365746289962"
+    }
+  },
+  "parameters": {
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Location"
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "automation-account",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.12.40.16777",
+              "templateHash": "428439117933447522"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "Location"
+              }
+            },
+            "automationAccountName": {
+              "type": "string",
+              "defaultValue": "aa-aks-automation",
+              "metadata": {
+                "description": "Name of the automation account"
+              }
+            },
+            "automationAccountSku": {
+              "type": "string",
+              "defaultValue": "Basic",
+              "allowedValues": [
+                "Basic"
+              ],
+              "metadata": {
+                "description": "Automation account SKU"
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Automation/automationAccounts",
+              "apiVersion": "2022-08-08",
+              "name": "[parameters('automationAccountName')]",
+              "location": "[parameters('location')]",
+              "identity": {
+                "type": "SystemAssigned"
+              },
+              "properties": {
+                "publicNetworkAccess": true,
+                "disableLocalAuth": false,
+                "sku": {
+                  "name": "[parameters('automationAccountSku')]"
+                }
+              }
+            }
+          ],
+          "outputs": {
+            "name": {
+              "type": "string",
+              "value": "[parameters('automationAccountName')]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "runbook",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "automationAccountName": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'automation-account'), '2020-10-01').outputs.name.value]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.12.40.16777",
+              "templateHash": "14973657731213895507"
+            }
+          },
+          "parameters": {
+            "automationAccountName": {
+              "type": "string",
+              "metadata": {
+                "description": "Automation Account name"
+              }
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "Location of automation account"
+              }
+            }
+          },
+          "variables": {
+            "scriptUri": "https://raw.githubusercontent.com/daniellindemann/azure-automation/dev/aks-start-stop/aks-start-stop/Auto-Start-Stop-AKS.ps1"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Automation/automationAccounts/runbooks",
+              "apiVersion": "2022-08-08",
+              "name": "[format('{0}/{1}', parameters('automationAccountName'), 'AutoStartStopAks')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "runbookType": "PowerShell7",
+                "publishContentLink": {
+                  "uri": "[variables('scriptUri')]",
+                  "version": "1.0.0.0"
+                }
+              }
+            }
+          ],
+          "outputs": {
+            "name": {
+              "type": "string",
+              "value": "AutoStartStopAks"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', 'automation-account')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "schedule",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "automationAccountName": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'automation-account'), '2020-10-01').outputs.name.value]"
+          },
+          "runbookName": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'runbook'), '2020-10-01').outputs.name.value]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.12.40.16777",
+              "templateHash": "629941195507790486"
+            }
+          },
+          "parameters": {
+            "automationAccountName": {
+              "type": "string",
+              "metadata": {
+                "description": "Automation Account name"
+              }
+            },
+            "runbookName": {
+              "type": "string",
+              "metadata": {
+                "description": "Runbook name"
+              }
+            },
+            "scheduleStartDate": {
+              "type": "string",
+              "defaultValue": "[dateTimeAdd(utcNow(), 'PT1H')]",
+              "metadata": {
+                "description": "Schedule start date (must be in the future)\nUse ISO8601 date string, e.g. '2022-10-19T10:01:00+02:00'\n"
+              }
+            },
+            "subscriptionId": {
+              "type": "string",
+              "defaultValue": "[subscription().subscriptionId]",
+              "metadata": {
+                "description": "Subscription Id of the subscription the script should run on"
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Automation/automationAccounts/schedules",
+              "apiVersion": "2022-08-08",
+              "name": "[format('{0}/{1}', parameters('automationAccountName'), '15min')]",
+              "properties": {
+                "description": "Runs every 15 minutes",
+                "frequency": "Minute",
+                "interval": 15,
+                "startTime": "[parameters('scheduleStartDate')]"
+              }
+            },
+            {
+              "type": "Microsoft.Automation/automationAccounts/jobSchedules",
+              "apiVersion": "2022-08-08",
+              "name": "[format('{0}/{1}', parameters('automationAccountName'), guid(format('{0}-15min-{1}', parameters('runbookName'), parameters('subscriptionId'))))]",
+              "properties": {
+                "parameters": {
+                  "SubscriptionId": "[parameters('subscriptionId')]"
+                },
+                "runbook": {
+                  "name": "[parameters('runbookName')]"
+                },
+                "schedule": {
+                  "name": "15min"
+                }
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', 'automation-account')]",
+        "[resourceId('Microsoft.Resources/deployments', 'runbook')]"
+      ]
+    }
+  ]
+}
