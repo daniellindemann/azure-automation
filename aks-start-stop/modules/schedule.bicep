@@ -19,6 +19,9 @@ param scheduleStartDate string
 @description('Subscription Id of the subscription the script should run on')
 param subscriptionId string
 
+@description('A generated guid for the runbook job schedule creation')
+param runbookJobScheduleGuid string =guid('${resourceGroup().id}-${runbookName}-${newGuid()}')
+
 resource automationAccount 'Microsoft.Automation/automationAccounts@2022-08-08' existing = {
   name: automationAccountName
 }
@@ -36,7 +39,8 @@ resource runbookSchedule 'Microsoft.Automation/automationAccounts/schedules@2022
 
 resource runbookJobSchedule 'Microsoft.Automation/automationAccounts/jobSchedules@2022-08-08' = {
   parent: automationAccount
-  name: guid('${resourceGroup().id}-${runbookName}-${runbookSchedule.name}-${subscriptionId}')
+#disable-next-line use-stable-resource-identifiers
+  name: runbookJobScheduleGuid
   properties: {
     parameters: {
       SubscriptionId: subscriptionId
