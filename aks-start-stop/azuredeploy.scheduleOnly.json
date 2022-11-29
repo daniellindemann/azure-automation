@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.12.40.16777",
-      "templateHash": "7989439868531085664"
+      "templateHash": "18256694352375365432"
     }
   },
   "parameters": {
@@ -21,6 +21,20 @@
       "defaultValue": "AutoStartStopAks",
       "metadata": {
         "description": "Runbook name"
+      }
+    },
+    "subscriptionId": {
+      "type": "string",
+      "defaultValue": "[subscription().subscriptionId]",
+      "metadata": {
+        "description": "Subscription Id of the subscription the script should run on"
+      }
+    },
+    "scheduleStartDate": {
+      "type": "string",
+      "defaultValue": "[dateTimeAdd(utcNow(), 'PT1H')]",
+      "metadata": {
+        "description": "Schedule start date (must be in the future)\nUse ISO8601 date string, e.g. '2022-10-19T10:01:00+02:00'\n"
       }
     }
   },
@@ -40,6 +54,12 @@
           },
           "runbookName": {
             "value": "[parameters('runbookName')]"
+          },
+          "subscriptionId": {
+            "value": "[parameters('subscriptionId')]"
+          },
+          "scheduleStartDate": {
+            "value": "[parameters('scheduleStartDate')]"
           }
         },
         "template": {
@@ -49,7 +69,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.12.40.16777",
-              "templateHash": "16233247412080237412"
+              "templateHash": "15932895467965613326"
             }
           },
           "parameters": {
@@ -67,14 +87,12 @@
             },
             "scheduleStartDate": {
               "type": "string",
-              "defaultValue": "[dateTimeAdd(utcNow(), 'PT1H')]",
               "metadata": {
                 "description": "Schedule start date (must be in the future)\nUse ISO8601 date string, e.g. '2022-10-19T10:01:00+02:00'\n"
               }
             },
             "subscriptionId": {
               "type": "string",
-              "defaultValue": "[subscription().subscriptionId]",
               "metadata": {
                 "description": "Subscription Id of the subscription the script should run on"
               }
@@ -95,7 +113,7 @@
             {
               "type": "Microsoft.Automation/automationAccounts/jobSchedules",
               "apiVersion": "2022-08-08",
-              "name": "[format('{0}/{1}', parameters('automationAccountName'), guid(format('{0}-{1}-{2}', parameters('runbookName'), '15min', parameters('subscriptionId'))))]",
+              "name": "[format('{0}/{1}', parameters('automationAccountName'), guid(format('{0}-{1}-{2}-{3}', resourceGroup().id, parameters('runbookName'), '15min', parameters('subscriptionId'))))]",
               "properties": {
                 "parameters": {
                   "SubscriptionId": "[parameters('subscriptionId')]"

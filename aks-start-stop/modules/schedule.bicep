@@ -14,10 +14,10 @@ param runbookName string
 Schedule start date (must be in the future)
 Use ISO8601 date string, e.g. '2022-10-19T10:01:00+02:00'
 ''')
-param scheduleStartDate string = dateTimeAdd(utcNow(), 'PT1H')
+param scheduleStartDate string
 
 @description('Subscription Id of the subscription the script should run on')
-param subscriptionId string = subscription().subscriptionId
+param subscriptionId string
 
 resource automationAccount 'Microsoft.Automation/automationAccounts@2022-08-08' existing = {
   name: automationAccountName
@@ -36,7 +36,7 @@ resource runbookSchedule 'Microsoft.Automation/automationAccounts/schedules@2022
 
 resource runbookJobSchedule 'Microsoft.Automation/automationAccounts/jobSchedules@2022-08-08' = {
   parent: automationAccount
-  name: guid('${runbookName}-${runbookSchedule.name}-${subscriptionId}')
+  name: guid('${resourceGroup().id}-${runbookName}-${runbookSchedule.name}-${subscriptionId}')
   properties: {
     parameters: {
       SubscriptionId: subscriptionId

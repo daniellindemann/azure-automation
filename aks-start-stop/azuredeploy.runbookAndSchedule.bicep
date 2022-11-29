@@ -7,6 +7,15 @@ param automationAccountName string = 'aa-aks-automation'
 @description('Runbook name')
 param runbookName string = 'AutoStartStopAks'
 
+@description('Subscription Id of the subscription the script should run on')
+param subscriptionId string = subscription().subscriptionId
+
+@description('''
+Schedule start date (must be in the future)
+Use ISO8601 date string, e.g. '2022-10-19T10:01:00+02:00'
+''')
+param scheduleStartDate string = dateTimeAdd(utcNow(), 'PT1H')
+
 module runbook 'modules/runbook.bicep' = {
   name: 'runbook'
   params: {
@@ -21,5 +30,7 @@ module schedule 'modules/schedule.bicep' = {
   params: {
     automationAccountName: automationAccountName
     runbookName: runbook.outputs.name
+    subscriptionId: subscriptionId
+    scheduleStartDate: scheduleStartDate
   }
 }
