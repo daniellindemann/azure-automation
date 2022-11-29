@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.12.40.16777",
-      "templateHash": "18256694352375365432"
+      "templateHash": "947535003335418994"
     }
   },
   "parameters": {
@@ -69,7 +69,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.12.40.16777",
-              "templateHash": "15932895467965613326"
+              "templateHash": "11923783797283918423"
             }
           },
           "parameters": {
@@ -96,15 +96,22 @@
               "metadata": {
                 "description": "Subscription Id of the subscription the script should run on"
               }
+            },
+            "runbookJobScheduleGuid": {
+              "type": "string",
+              "defaultValue": "[guid(format('{0}-{1}-{2}', resourceGroup().id, parameters('runbookName'), newGuid()))]",
+              "metadata": {
+                "description": "A generated guid for the runbook job schedule creation"
+              }
             }
           },
           "resources": [
             {
               "type": "Microsoft.Automation/automationAccounts/schedules",
               "apiVersion": "2022-08-08",
-              "name": "[format('{0}/{1}', parameters('automationAccountName'), '15min')]",
+              "name": "[format('{0}/{1}', parameters('automationAccountName'), format('{0} every 15min on subscription {1}', parameters('runbookName'), parameters('subscriptionId')))]",
               "properties": {
-                "description": "Runs every 15 minutes",
+                "description": "[format('Runs every 15 minutes on subscription {0}', parameters('subscriptionId'))]",
                 "frequency": "Minute",
                 "interval": 15,
                 "startTime": "[parameters('scheduleStartDate')]"
@@ -113,7 +120,7 @@
             {
               "type": "Microsoft.Automation/automationAccounts/jobSchedules",
               "apiVersion": "2022-08-08",
-              "name": "[format('{0}/{1}', parameters('automationAccountName'), guid(format('{0}-{1}-{2}-{3}', resourceGroup().id, parameters('runbookName'), '15min', parameters('subscriptionId'))))]",
+              "name": "[format('{0}/{1}', parameters('automationAccountName'), parameters('runbookJobScheduleGuid'))]",
               "properties": {
                 "parameters": {
                   "SubscriptionId": "[parameters('subscriptionId')]"
@@ -122,11 +129,11 @@
                   "name": "[parameters('runbookName')]"
                 },
                 "schedule": {
-                  "name": "15min"
+                  "name": "[format('{0} every 15min on subscription {1}', parameters('runbookName'), parameters('subscriptionId'))]"
                 }
               },
               "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts/schedules', parameters('automationAccountName'), '15min')]"
+                "[resourceId('Microsoft.Automation/automationAccounts/schedules', parameters('automationAccountName'), format('{0} every 15min on subscription {1}', parameters('runbookName'), parameters('subscriptionId')))]"
               ]
             }
           ]

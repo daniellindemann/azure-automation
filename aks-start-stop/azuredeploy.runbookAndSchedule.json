@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.12.40.16777",
-      "templateHash": "9535085116380660230"
+      "templateHash": "15690897043738291886"
     }
   },
   "parameters": {
@@ -154,7 +154,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.12.40.16777",
-              "templateHash": "2528724060422152415"
+              "templateHash": "11923783797283918423"
             }
           },
           "parameters": {
@@ -194,9 +194,9 @@
             {
               "type": "Microsoft.Automation/automationAccounts/schedules",
               "apiVersion": "2022-08-08",
-              "name": "[format('{0}/{1}', parameters('automationAccountName'), '15min')]",
+              "name": "[format('{0}/{1}', parameters('automationAccountName'), format('{0} every 15min on subscription {1}', parameters('runbookName'), parameters('subscriptionId')))]",
               "properties": {
-                "description": "Runs every 15 minutes",
+                "description": "[format('Runs every 15 minutes on subscription {0}', parameters('subscriptionId'))]",
                 "frequency": "Minute",
                 "interval": 15,
                 "startTime": "[parameters('scheduleStartDate')]"
@@ -214,11 +214,11 @@
                   "name": "[parameters('runbookName')]"
                 },
                 "schedule": {
-                  "name": "15min"
+                  "name": "[format('{0} every 15min on subscription {1}', parameters('runbookName'), parameters('subscriptionId'))]"
                 }
               },
               "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts/schedules', parameters('automationAccountName'), '15min')]"
+                "[resourceId('Microsoft.Automation/automationAccounts/schedules', parameters('automationAccountName'), format('{0} every 15min on subscription {1}', parameters('runbookName'), parameters('subscriptionId')))]"
               ]
             }
           ]

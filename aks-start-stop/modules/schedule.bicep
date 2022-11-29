@@ -28,9 +28,9 @@ resource automationAccount 'Microsoft.Automation/automationAccounts@2022-08-08' 
 
 resource runbookSchedule 'Microsoft.Automation/automationAccounts/schedules@2022-08-08' = {
   parent: automationAccount
-  name: '15min'
+  name: '${runbookName} every 15min on subscription ${subscriptionId}'
   properties: {
-    description: 'Runs every 15 minutes'
+    description: 'Runs every 15 minutes on subscription ${subscriptionId}'
     frequency: 'Minute'
     interval: any(15)
     startTime: scheduleStartDate
