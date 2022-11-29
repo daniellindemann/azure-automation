@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.12.40.16777",
-      "templateHash": "2996069694316013058"
+      "templateHash": "9535085116380660230"
     }
   },
   "parameters": {
@@ -154,7 +154,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.12.40.16777",
-              "templateHash": "15932895467965613326"
+              "templateHash": "2528724060422152415"
             }
           },
           "parameters": {
@@ -181,6 +181,13 @@
               "metadata": {
                 "description": "Subscription Id of the subscription the script should run on"
               }
+            },
+            "runbookJobScheduleGuid": {
+              "type": "string",
+              "defaultValue": "[guid(format('{0}-{1}-{2}', resourceGroup().id, parameters('runbookName'), newGuid()))]",
+              "metadata": {
+                "description": "A generated guid for the runbook job schedule creation"
+              }
             }
           },
           "resources": [
@@ -198,7 +205,7 @@
             {
               "type": "Microsoft.Automation/automationAccounts/jobSchedules",
               "apiVersion": "2022-08-08",
-              "name": "[format('{0}/{1}', parameters('automationAccountName'), guid(format('{0}-{1}-{2}-{3}', resourceGroup().id, parameters('runbookName'), '15min', parameters('subscriptionId'))))]",
+              "name": "[format('{0}/{1}', parameters('automationAccountName'), parameters('runbookJobScheduleGuid'))]",
               "properties": {
                 "parameters": {
                   "SubscriptionId": "[parameters('subscriptionId')]"
