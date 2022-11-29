@@ -41,11 +41,20 @@ TODO: deployment of automation account, deployment of privilges, deployment of s
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdaniellindemann%2Fazure-automation%2Fdev%2Faks-start-stop%2Faks-start-stop%2Fazuredeploy.full.json)
 
-### script only
+### Script and schedule deployment
 
-TODO: privileges and script for solution
+TODO: script and schedule
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdaniellindemann%2Fazure-automation%2Fdev%2Faks-start-stop%2Faks-start-stop%2Fazuredeploy.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdaniellindemann%2Fazure-automation%2Fdev%2Faks-start-stop%2Faks-start-stop%2Fazuredeploy.runbookAndSchedule.json)
+
+### Schedule deployment only
+
+TODO: schedule only
+
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdaniellindemann%2Fazure-automation%2Fdev%2Faks-start-stop%2Faks-start-stop%2Fazuredeploy.scheduleOnly.json)
+
+
+
 
 ## Customization
 

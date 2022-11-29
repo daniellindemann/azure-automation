@@ -7,19 +7,11 @@ param automationAccountName string = 'aa-aks-automation'
 @description('Runbook name')
 param runbookName string = 'AutoStartStopAks'
 
-module automationAccount 'modules/automationAccount.bicep' = {
-  name: 'automation-account'
-  params: {
-    location: location
-    automationAccountName: automationAccountName
-  }
-}
-
 module runbook 'modules/runbook.bicep' = {
   name: 'runbook'
   params: {
     location: location
-    automationAccountName: automationAccount.outputs.name
+    automationAccountName: automationAccountName
     runbookName: runbookName
   }
 }
@@ -27,7 +19,7 @@ module runbook 'modules/runbook.bicep' = {
 module schedule 'modules/schedule.bicep' = {
   name: 'schedule'
   params: {
-    automationAccountName: automationAccount.outputs.name
+    automationAccountName: automationAccountName
     runbookName: runbook.outputs.name
   }
 }
