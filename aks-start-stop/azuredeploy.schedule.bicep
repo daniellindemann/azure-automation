@@ -36,7 +36,7 @@ resource runbookSchedule 'Microsoft.Automation/automationAccounts/schedules@2022
 
 resource runbookJobSchedule 'Microsoft.Automation/automationAccounts/jobSchedules@2022-08-08' = {
   parent: automationAccount
-  name: guid('${runbookName}-15min-${subscriptionId}')
+  name: guid('${runbookName}-${runbookSchedule.name}-${subscriptionId}')
   properties: {
     parameters: {
       SubscriptionId: subscriptionId
@@ -45,7 +45,7 @@ resource runbookJobSchedule 'Microsoft.Automation/automationAccounts/jobSchedule
       name: runbookName
     }
     schedule: {
-      name: '15min'
+      name: runbookSchedule.name
     }
   }
 }
