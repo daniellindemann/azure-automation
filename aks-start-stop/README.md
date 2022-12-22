@@ -36,7 +36,7 @@ Script: [azuredeploy.roleAssignment.json](azuredeploy.roleAssignment.json)
 
 ### Automation Account and script deployment
 
-Use the following deployment to deploy an Azure Automation Account along with the deployment script.
+Use the following deployment to provision an Azure Automation Account along with the automation script.
 
 > Ensure to configure permissions for the Automation Account after provisioning.
 
