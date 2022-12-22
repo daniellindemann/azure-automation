@@ -1,9 +1,3 @@
-/*
-
-Create a 15min schedule
-
-*/
-
 @description('Automation Account name')
 param automationAccountName string
 

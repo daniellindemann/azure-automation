@@ -1,10 +1,10 @@
 <#
     .DESCRIPTION
-        An example runbook which gets all the ARM resources using the Managed Identity
+        This runbook starts and stops Azure Kubernetes Service clusters at a specific time.
 
     .NOTES
-        AUTHOR: Azure Automation Team
-        LASTEDIT: Oct 26, 2021
+        AUTHOR: Daniel Lindemann
+        LASTEDIT: Dec 22, 2022
 #>
 
 <#
@@ -27,11 +27,21 @@ param (
     $ResourceGroupName,
 
     # Search for these tags configured within the cluster
-    $TagNameBusinessHoursDays = 'Business Hours Days',
-    $TagNameBusinessHoursStart = 'Business Hours Start',
-    $TagNameBusinessHoursEnd = 'Business Hours End',
+    [Parameter(Mandatory = $false)]
+    [string]
+    $TagNameBusinessHoursDays = 'auto-aks-days',
+
+    [Parameter(Mandatory = $false)]
+    [string]
+    $TagNameBusinessHoursStart = 'auto-aks-start-at',
+
+    [Parameter(Mandatory = $false)]
+    [string]
+    $TagNameBusinessHoursEnd = 'auto-aks-stop-at',
 
     # Default Values
+    [Parameter(Mandatory = $false)]
+    [string]
     $DefaultTagBusinessHoursDays = 'Mon,Tue,Wed,Thu,Fri',
 
     # Params for local dev
@@ -65,7 +75,7 @@ function StartStopCluster {
         [Parameter(Mandatory = $true)]
         $clusters
     )
-    
+
     foreach ($aksCluster in $clusters) {
         # get data
         $businessHoursDays = $aksCluster.Tags[$TagNameBusinessHoursDays]
@@ -97,7 +107,7 @@ function StartStopCluster {
                     Start-AzAksCluster -Name $aksCluster.Name -ResourceGroupName $resourceGroup
                     "Started AKS $($aksCluster.Name) in resource group $resourceGroup"
             }
-            
+
             # check if aks should be stopped
             if(($timeUtc -ge $stopDate -or
                 $timeUtc -lt $startDate) -and

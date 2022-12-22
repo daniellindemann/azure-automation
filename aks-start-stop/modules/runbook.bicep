@@ -7,7 +7,7 @@ param automationAccountName string
 @description('Runbook name')
 param runbookName string
 
-var scriptUri = 'https://raw.githubusercontent.com/daniellindemann/azure-automation/dev/aks-start-stop/aks-start-stop/Auto-Start-Stop-AKS.ps1'
+var scriptUri = 'https://raw.githubusercontent.com/daniellindemann/azure-automation/main/aks-start-stop/Auto-Start-Stop-AKS.ps1'
 
 resource automationAccount 'Microsoft.Automation/automationAccounts@2022-08-08' existing = {
   name: automationAccountName

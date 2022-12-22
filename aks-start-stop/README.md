@@ -4,9 +4,9 @@ The AKS Start/Stop automation script helps you to automatically start and stop y
 
 The solution uses an Azure Automation Account for an easy integration in your system.
 
-You can configure multiple schedules for the script to run it for different subscriptions. Ensure the managed identity has permissions to access the subscription.
+You can configure multiple schedules for the script to run it for different subscriptions. Ensure the managed identity has permissions to access these subscriptions.
 
-After the deployment of the Azure resources you can tag your AKS Cluster with `Business Hours Start` and `Business Hours End` tga to ensure the cluster is only available during the specified time. The tag value is a time value in *24h format*, e.g. `08:00` or `18:00`.
+After the deployment of the Azure resources you need to tag your AKS Cluster with `auto-aks-start-at-utc` and `auto-aks-stop-at-utc` to ensure the cluster is only available during the specified time. The tag value is a time value in *24h format*, e.g. `08:00` or `18:00`. The time needs to be set as `UTC` time.
 
 ![AKS resource tags](static/k8s-resource-tagging.png)
 
@@ -16,8 +16,7 @@ After the deployment of the Azure resources you can tag your AKS Cluster with `B
 
 To use the script you need to have an Azure automation account available in your Azure environment.
 
-TODO: try to reference header
-You can use *Automation Account and script deployment* to deploy an automation account along with the script.
+You can use the *Automation Account and script deployment* to deploy an automation account along with the script.
 
 ### Set permissions for automation account's system assigned identity
 
@@ -29,7 +28,7 @@ The script requires an Azure Managed Identity with privileges to start and stop 
 
 If you want to deploy a role assignment for an Automation accounts system assigned managed identity you can use the deployment button.
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdaniellindemann%2Fazure-automation%2Fdev%2Faks-start-stop%2Faks-start-stop%2Fazuredeploy.roleAssignment.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdaniellindemann%2Fazure-automation%2Fmain%2Faks-start-stop%2Fazuredeploy.roleAssignment.json)
 
 Script: [azuredeploy.roleAssignment.json](azuredeploy.roleAssignment.json)
 
@@ -37,25 +36,49 @@ Script: [azuredeploy.roleAssignment.json](azuredeploy.roleAssignment.json)
 
 ### Automation Account and script deployment
 
-TODO: deployment of automation account, deployment of privilges, deployment of script for subscription
+Use the following deployment to deploy an Azure Automation Account along with the deployment script.
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdaniellindemann%2Fazure-automation%2Fdev%2Faks-start-stop%2Faks-start-stop%2Fazuredeploy.full.json)
+> Ensure to configure permissions for the Automation Account after provisioning.
+
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdaniellindemann%2Fazure-automation%2Fmain%2Faks-start-stop%2Fazuredeploy.full.json)
+
+You can view the script here:
+
+- Bicep: [azuredeploy.full.bicep](azuredeploy.full.bicep)
+- ARM: [azuredeploy.full.json](azuredeploy.full.json)
 
 ### Script and schedule deployment
 
-TODO: script and schedule
+If you already have an Azure Automation Account, you can use the following script to deploy only the *Auto Start/Stop AKS* script with a schedule.
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdaniellindemann%2Fazure-automation%2Fdev%2Faks-start-stop%2Faks-start-stop%2Fazuredeploy.runbookAndSchedule.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdaniellindemann%2Fazure-automation%2Fmain%2Faks-start-stop%2Fazuredeploy.runbookAndSchedule.json)
+
+You can view the script here:
+
+- Bicep: [azuredeploy.runbookAndSchedule.bicep](azuredeploy.runbookAndSchedule.bicep)
+- ARM: [azuredeploy.runbookAndSchedule.json](azuredeploy.runbookAndSchedule.json)
 
 ### Schedule deployment only
 
-TODO: schedule only
+If you just need to deploy a new schedule to handle automatic start and stop of your AKS clusters in a new subscription, you can use this script.
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdaniellindemann%2Fazure-automation%2Fdev%2Faks-start-stop%2Faks-start-stop%2Fazuredeploy.scheduleOnly.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdaniellindemann%2Fazure-automation%2Fmain%2Faks-start-stop%2Fazuredeploy.scheduleOnly.json)
 
+You can view the script here:
 
+- Bicep: [azuredeploy.scheduleOnly.bicep](azuredeploy.scheduleOnly.bicep)
+- ARM: [azuredeploy.scheduleOnly.json](azuredeploy.scheduleOnly.json)
 
+## Configuration
+
+After the Azure resources are deployed, add tags to your AKS resources.
+
+| Tag | Required | Description | Example Value |
+|-----|----------|-------------|---------------|
+| auto-aks-start-at-utc | Required | Time of AKS startup in 24h format as UTC time | 08:00 | 
+| auto-aks-stop-at-utc | Required | Time of AKS shutdown in 24h format as UTC time | 18:00 |
+| auto-aks-days | Optional | Days the AKS should start and stop (Default: Mon,Tue,Wed,Thu,Fri) | Mon,Tue,Wed,Thu,Fri,Sat |
 
 ## Customization
 
-TODO:
+If the automation tags doesn't match your conventions or you just want to use other tags, you can update the script and set new values for the parameters `$TagNameBusinessHoursDays`, `$TagNameBusinessHoursStart`, `$TagNameBusinessHoursEnd`.
