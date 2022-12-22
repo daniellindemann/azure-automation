@@ -33,11 +33,11 @@ param (
 
     [Parameter(Mandatory = $false)]
     [string]
-    $TagNameBusinessHoursStart = 'auto-aks-start-at',
+    $TagNameBusinessHoursStart = 'auto-aks-start-at-utc',
 
     [Parameter(Mandatory = $false)]
     [string]
-    $TagNameBusinessHoursEnd = 'auto-aks-stop-at',
+    $TagNameBusinessHoursEnd = 'auto-aks-stop-at-utc',
 
     # Default Values
     [Parameter(Mandatory = $false)]
@@ -77,6 +77,9 @@ function StartStopCluster {
     )
 
     foreach ($aksCluster in $clusters) {
+
+        "Checking $($aksCluster.Name)"
+
         # get data
         $businessHoursDays = $aksCluster.Tags[$TagNameBusinessHoursDays]
         if(!$businessHoursDays) {
@@ -95,6 +98,9 @@ function StartStopCluster {
         }
 
         if($null -ne $businessHoursStart -and $null -ne $businessHoursEnd) {
+
+            "$($aksCluster.Name) has tags $TagNameBusinessHoursStart and $TagNameBusinessHoursEnd"
+
             $startDate = [DateTime]::Parse($isoDateStringTemplate + $businessHoursStart)
             $stopDate = [DateTime]::Parse($isoDateStringTemplate + $businessHoursEnd)
 

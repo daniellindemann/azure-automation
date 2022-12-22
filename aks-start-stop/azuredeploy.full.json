@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.12.40.16777",
-      "templateHash": "16446513460002218451"
+      "version": "0.13.1.58284",
+      "templateHash": "6149215547398694097"
     }
   },
   "parameters": {
@@ -69,8 +69,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.12.40.16777",
-              "templateHash": "428439117933447522"
+              "version": "0.13.1.58284",
+              "templateHash": "16674044114025354063"
             }
           },
           "parameters": {
@@ -152,8 +152,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.12.40.16777",
-              "templateHash": "12308687604960127518"
+              "version": "0.13.1.58284",
+              "templateHash": "1447796701475840000"
             }
           },
           "parameters": {
@@ -178,7 +178,7 @@
             }
           },
           "variables": {
-            "scriptUri": "https://raw.githubusercontent.com/daniellindemann/azure-automation/dev/aks-start-stop/aks-start-stop/Auto-Start-Stop-AKS.ps1"
+            "scriptUri": "https://raw.githubusercontent.com/daniellindemann/azure-automation/main/aks-start-stop/Auto-Start-Stop-AKS.ps1"
           },
           "resources": [
             {
@@ -236,8 +236,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.12.40.16777",
-              "templateHash": "11923783797283918423"
+              "version": "0.13.1.58284",
+              "templateHash": "11050116578419283108"
             }
           },
           "parameters": {
