@@ -20,9 +20,9 @@ You can use the *Automation Account and script deployment* to deploy an automati
 
 ### Set permissions for automation account's system assigned identity
 
-The script requires an Azure Managed Identity with privileges to start and stop AKS clusters. Using the system assigned managed identity of the automation account is prefered. Giving the system assigned managed identity the role *Azure Kubernetes Service Contributor Role* is a good start.
+The script requires an Azure Managed Identity with privileges to start and stop AKS clusters. Using the system assigned managed identity of the automation account is prefered. Giving the system assigned managed identity the role *Contributor* is a good start.
 
-> The role *Azure Kubernetes Service Contributor Role* has high permissions, but is built-in and available in every environment. It should not be used in production ready environments. A best practice is to create a custom role which only has the required permissions. A sample custom role definition in bicep format can be found here: [aks-power-manager-role.bicep](aks-power-manager-role.bicep)
+> The role *Contributor* has high permissions, but is built-in and available in every environment. It should not be used in production ready environments. A best practice is to create a custom role which only has the required permissions. A sample custom role definition in bicep format can be found here: [aks-power-manager-role.bicep](aks-power-manager-role.bicep)
 
 #### Deploy role assignment
 
