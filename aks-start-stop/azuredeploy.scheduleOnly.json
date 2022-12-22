@@ -1,0 +1,144 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.12.40.16777",
+      "templateHash": "947535003335418994"
+    }
+  },
+  "parameters": {
+    "automationAccountName": {
+      "type": "string",
+      "defaultValue": "aa-aks-automation",
+      "metadata": {
+        "description": "Automation Account name"
+      }
+    },
+    "runbookName": {
+      "type": "string",
+      "defaultValue": "AutoStartStopAks",
+      "metadata": {
+        "description": "Runbook name"
+      }
+    },
+    "subscriptionId": {
+      "type": "string",
+      "defaultValue": "[subscription().subscriptionId]",
+      "metadata": {
+        "description": "Subscription Id of the subscription the script should run on"
+      }
+    },
+    "scheduleStartDate": {
+      "type": "string",
+      "defaultValue": "[dateTimeAdd(utcNow(), 'PT1H')]",
+      "metadata": {
+        "description": "Schedule start date (must be in the future)\nUse ISO8601 date string, e.g. '2022-10-19T10:01:00+02:00'\n"
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "schedule",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "automationAccountName": {
+            "value": "[parameters('automationAccountName')]"
+          },
+          "runbookName": {
+            "value": "[parameters('runbookName')]"
+          },
+          "subscriptionId": {
+            "value": "[parameters('subscriptionId')]"
+          },
+          "scheduleStartDate": {
+            "value": "[parameters('scheduleStartDate')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.12.40.16777",
+              "templateHash": "11923783797283918423"
+            }
+          },
+          "parameters": {
+            "automationAccountName": {
+              "type": "string",
+              "metadata": {
+                "description": "Automation Account name"
+              }
+            },
+            "runbookName": {
+              "type": "string",
+              "metadata": {
+                "description": "Runbook name"
+              }
+            },
+            "scheduleStartDate": {
+              "type": "string",
+              "metadata": {
+                "description": "Schedule start date (must be in the future)\nUse ISO8601 date string, e.g. '2022-10-19T10:01:00+02:00'\n"
+              }
+            },
+            "subscriptionId": {
+              "type": "string",
+              "metadata": {
+                "description": "Subscription Id of the subscription the script should run on"
+              }
+            },
+            "runbookJobScheduleGuid": {
+              "type": "string",
+              "defaultValue": "[guid(format('{0}-{1}-{2}', resourceGroup().id, parameters('runbookName'), newGuid()))]",
+              "metadata": {
+                "description": "A generated guid for the runbook job schedule creation"
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Automation/automationAccounts/schedules",
+              "apiVersion": "2022-08-08",
+              "name": "[format('{0}/{1}', parameters('automationAccountName'), format('{0} every 15min on subscription {1}', parameters('runbookName'), parameters('subscriptionId')))]",
+              "properties": {
+                "description": "[format('Runs every 15 minutes on subscription {0}', parameters('subscriptionId'))]",
+                "frequency": "Minute",
+                "interval": 15,
+                "startTime": "[parameters('scheduleStartDate')]"
+              }
+            },
+            {
+              "type": "Microsoft.Automation/automationAccounts/jobSchedules",
+              "apiVersion": "2022-08-08",
+              "name": "[format('{0}/{1}', parameters('automationAccountName'), parameters('runbookJobScheduleGuid'))]",
+              "properties": {
+                "parameters": {
+                  "SubscriptionId": "[parameters('subscriptionId')]"
+                },
+                "runbook": {
+                  "name": "[parameters('runbookName')]"
+                },
+                "schedule": {
+                  "name": "[format('{0} every 15min on subscription {1}', parameters('runbookName'), parameters('subscriptionId'))]"
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Automation/automationAccounts/schedules', parameters('automationAccountName'), format('{0} every 15min on subscription {1}', parameters('runbookName'), parameters('subscriptionId')))]"
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
