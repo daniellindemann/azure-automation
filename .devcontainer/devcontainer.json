@@ -1,44 +1,57 @@
-// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
-// https://github.com/microsoft/vscode-dev-containers/tree/v0.245.2/containers/debian
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/debian
 {
 	"name": "Debian",
-	"build": {
-		"dockerfile": "Dockerfile",
-		// Update 'VARIANT' to pick an Debian version: bullseye, buster
-		// Use bullseye on local arm64/Apple Silicon.
-		"args": { "VARIANT": "bullseye" }
+	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+	"image": "mcr.microsoft.com/devcontainers/base:bookworm",
+	"features": {
+		"ghcr.io/devcontainers/features/common-utils:2": {
+			"installZsh": "false",
+			"username": "vscode",
+			"upgradePackages": "false",
+			"nonFreePackages": "true"
+		},
+		"ghcr.io/devcontainers/features/powershell:1": {
+			"version": "latest"
+		},
+		"ghcr.io/stuartleeks/dev-container-features/azure-cli-persistence:0": {},
+		"ghcr.io/natescherer/devcontainers-custom-features/powershell-resources:1": {
+			"resources": "Az"
+		},
+		"ghcr.io/devcontainers/features/azure-cli:1": {
+			"installBicep": true,
+			"version": "latest"
+		}
 	},
+
+	"postCreateCommand": "sudo chsh vscode -s \"$(which pwsh)\" && sudo pwsh -c 'Install-Module -Name Pester -Scope AllUsers -Repository PSGallery -Force' && ./.devcontainer/postCreateCommand.sh",
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
 
-	// Uncomment to use the Docker CLI from inside the container. See https://aka.ms/vscode-remote/samples/docker-from-docker.
-	// "mounts": [ "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind" ],
-
-	// Uncomment when using a ptrace-based debugger like C++, Go, and Rust
-	// "runArgs": [ "--cap-add=SYS_PTRACE", "--security-opt", "seccomp=unconfined" ],
-
-	"settings": {
-		"powershell.powerShellAdditionalExePaths": {
-			"7": "/usr/local/bin/pwsh"
-		},
-		"powershell.powerShellDefaultVersion": "7"
-	},
-
-	"postCreateCommand": "chmod +x /usr/local/bin/pwsh && pwsh -c 'Install-Module -Name Az -Scope CurrentUser -Repository PSGallery -Force'",
-
-	// Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
-	"remoteUser": "vscode",
-	"features": {
-		"azure-cli": "latest",
-		"powershell": "latest"
-	},
+	// Configure tool-specific properties.
+	// Configure tool-specific properties.
 	"customizations": {
+		// Configure properties specific to VS Code.
 		"vscode": {
+			// Set *default* container specific settings.json values on container create.
+			"settings": { 
+				"terminal.integrated.defaultProfile.linux": "pwsh",
+				"powershell.pester.codeLens": false,
+				"powershell.powerShellAdditionalExePaths": {
+					"pwsh7": "/usr/local/bin/pwsh"
+				}
+			},
+			
+			// Add the IDs of extensions you want installed when the container is created.
 			"extensions": [
-				"ms-vscode.PowerShell",
+				"ms-vscode.powershell",
+				"pspester.pester-test",
 				"ms-azuretools.vscode-bicep"
 			]
 		}
 	}
+
+	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+	// "remoteUser": "root"
 }

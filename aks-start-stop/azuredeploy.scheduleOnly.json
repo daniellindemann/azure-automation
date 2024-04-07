@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.13.1.58284",
-      "templateHash": "12018338386422689940"
+      "version": "0.26.54.24096",
+      "templateHash": "1897653184919857122"
     }
   },
   "parameters": {
@@ -41,7 +41,7 @@
   "resources": [
     {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2020-10-01",
+      "apiVersion": "2022-09-01",
       "name": "schedule",
       "properties": {
         "expressionEvaluationOptions": {
@@ -68,8 +68,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.13.1.58284",
-              "templateHash": "11050116578419283108"
+              "version": "0.26.54.24096",
+              "templateHash": "12299115346840089754"
             }
           },
           "parameters": {
@@ -108,7 +108,7 @@
           "resources": [
             {
               "type": "Microsoft.Automation/automationAccounts/schedules",
-              "apiVersion": "2022-08-08",
+              "apiVersion": "2023-11-01",
               "name": "[format('{0}/{1}', parameters('automationAccountName'), format('{0} every 15min on subscription {1}', parameters('runbookName'), parameters('subscriptionId')))]",
               "properties": {
                 "description": "[format('Runs every 15 minutes on subscription {0}', parameters('subscriptionId'))]",
@@ -119,7 +119,7 @@
             },
             {
               "type": "Microsoft.Automation/automationAccounts/jobSchedules",
-              "apiVersion": "2022-08-08",
+              "apiVersion": "2023-11-01",
               "name": "[format('{0}/{1}', parameters('automationAccountName'), parameters('runbookJobScheduleGuid'))]",
               "properties": {
                 "parameters": {

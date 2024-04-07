@@ -1,17 +1,17 @@
-targetScope = 'subscription'
+targetScope = 'managementGroup'
 
 param roleGuid string = guid('aks-power-manager')
+param roleName string = 'Azure Kubernetes Service Power Manager'
 
-var subscriptionId = subscription().id
-var roleName = 'Azure Kubernetes Service Power Manager'
+var managementGroupId = managementGroup().id
 
-resource aks_automation_role 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' = {
+resource aks_automation_role 'Microsoft.Authorization/roleDefinitions@2022-04-01' = {
   name: roleGuid
   properties: {
     roleName: roleName
     description: 'Allows to list, start and stop AKS clusters'
     assignableScopes: [
-      subscriptionId
+      managementGroupId
     ]
     permissions: [
       {

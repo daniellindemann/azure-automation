@@ -1,0 +1,50 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-08-01/managementGroupDeploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.26.54.24096",
+      "templateHash": "11531439283663368950"
+    }
+  },
+  "parameters": {
+    "roleGuid": {
+      "type": "string",
+      "defaultValue": "[guid('aks-power-manager')]"
+    },
+    "roleName": {
+      "type": "string",
+      "defaultValue": "Azure Kubernetes Service Power Manager"
+    }
+  },
+  "variables": {
+    "managementGroupId": "[managementGroup().id]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Authorization/roleDefinitions",
+      "apiVersion": "2022-04-01",
+      "name": "[parameters('roleGuid')]",
+      "properties": {
+        "roleName": "[parameters('roleName')]",
+        "description": "Allows to list, start and stop AKS clusters",
+        "assignableScopes": [
+          "[variables('managementGroupId')]"
+        ],
+        "permissions": [
+          {
+            "actions": [
+              "Microsoft.ContainerService/managedClusters/read",
+              "Microsoft.ContainerService/managedClusters/start/action",
+              "Microsoft.ContainerService/managedClusters/stop/action"
+            ],
+            "dataActions": [],
+            "notActions": [],
+            "notDataActions": []
+          }
+        ]
+      }
+    }
+  ]
+}

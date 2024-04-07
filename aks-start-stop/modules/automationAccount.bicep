@@ -10,7 +10,7 @@ param automationAccountName string = 'aa-aks-automation'
 ])
 param automationAccountSku string = 'Basic'
 
-resource automationAccount 'Microsoft.Automation/automationAccounts@2022-08-08' = {
+resource automationAccount 'Microsoft.Automation/automationAccounts@2023-11-01' = {
   name: automationAccountName
   location: location
    identity: {

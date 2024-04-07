@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.13.1.58284",
-      "templateHash": "6149215547398694097"
+      "version": "0.26.54.24096",
+      "templateHash": "11414224362436798757"
     }
   },
   "parameters": {
@@ -48,7 +48,7 @@
   "resources": [
     {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2020-10-01",
+      "apiVersion": "2022-09-01",
       "name": "automation-account",
       "properties": {
         "expressionEvaluationOptions": {
@@ -69,8 +69,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.13.1.58284",
-              "templateHash": "16674044114025354063"
+              "version": "0.26.54.24096",
+              "templateHash": "15258818389135288044"
             }
           },
           "parameters": {
@@ -102,7 +102,7 @@
           "resources": [
             {
               "type": "Microsoft.Automation/automationAccounts",
-              "apiVersion": "2022-08-08",
+              "apiVersion": "2023-11-01",
               "name": "[parameters('automationAccountName')]",
               "location": "[parameters('location')]",
               "identity": {
@@ -128,7 +128,7 @@
     },
     {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2020-10-01",
+      "apiVersion": "2022-09-01",
       "name": "runbook",
       "properties": {
         "expressionEvaluationOptions": {
@@ -140,7 +140,7 @@
             "value": "[parameters('location')]"
           },
           "automationAccountName": {
-            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'automation-account'), '2020-10-01').outputs.name.value]"
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'automation-account'), '2022-09-01').outputs.name.value]"
           },
           "runbookName": {
             "value": "[parameters('runbookName')]"
@@ -152,8 +152,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.13.1.58284",
-              "templateHash": "1447796701475840000"
+              "version": "0.26.54.24096",
+              "templateHash": "12688133258773552818"
             }
           },
           "parameters": {
@@ -183,11 +183,12 @@
           "resources": [
             {
               "type": "Microsoft.Automation/automationAccounts/runbooks",
-              "apiVersion": "2022-08-08",
+              "apiVersion": "2023-11-01",
               "name": "[format('{0}/{1}', parameters('automationAccountName'), parameters('runbookName'))]",
               "location": "[parameters('location')]",
               "properties": {
-                "runbookType": "PowerShell7",
+                "runbookType": "PowerShell72",
+                "description": "Automatically start and stop AKS clusters based on tags on the AKS resource",
                 "publishContentLink": {
                   "uri": "[variables('scriptUri')]",
                   "version": "1.0.0.0"
@@ -209,7 +210,7 @@
     },
     {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2020-10-01",
+      "apiVersion": "2022-09-01",
       "name": "schedule",
       "properties": {
         "expressionEvaluationOptions": {
@@ -218,10 +219,10 @@
         "mode": "Incremental",
         "parameters": {
           "automationAccountName": {
-            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'automation-account'), '2020-10-01').outputs.name.value]"
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'automation-account'), '2022-09-01').outputs.name.value]"
           },
           "runbookName": {
-            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'runbook'), '2020-10-01').outputs.name.value]"
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'runbook'), '2022-09-01').outputs.name.value]"
           },
           "subscriptionId": {
             "value": "[parameters('subscriptionId')]"
@@ -236,8 +237,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.13.1.58284",
-              "templateHash": "11050116578419283108"
+              "version": "0.26.54.24096",
+              "templateHash": "12299115346840089754"
             }
           },
           "parameters": {
@@ -276,7 +277,7 @@
           "resources": [
             {
               "type": "Microsoft.Automation/automationAccounts/schedules",
-              "apiVersion": "2022-08-08",
+              "apiVersion": "2023-11-01",
               "name": "[format('{0}/{1}', parameters('automationAccountName'), format('{0} every 15min on subscription {1}', parameters('runbookName'), parameters('subscriptionId')))]",
               "properties": {
                 "description": "[format('Runs every 15 minutes on subscription {0}', parameters('subscriptionId'))]",
@@ -287,7 +288,7 @@
             },
             {
               "type": "Microsoft.Automation/automationAccounts/jobSchedules",
-              "apiVersion": "2022-08-08",
+              "apiVersion": "2023-11-01",
               "name": "[format('{0}/{1}', parameters('automationAccountName'), parameters('runbookJobScheduleGuid'))]",
               "properties": {
                 "parameters": {
