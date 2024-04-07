@@ -4,7 +4,6 @@
 
     .NOTES
         AUTHOR: Daniel Lindemann
-        LASTEDIT: Dec 22, 2022
 #>
 
 [CmdletBinding()]
