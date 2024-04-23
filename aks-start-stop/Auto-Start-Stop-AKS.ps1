@@ -130,7 +130,15 @@ function StartStopCluster {
         Write-Output "`tBusiness hours start: $businessHoursStart" -Verbose
         Write-Output "`tBusiness hours end: $businessHoursEnd" -Verbose
 
+        ## powerstate is not working properly in azure automation account with pwsh 7.1 preview und pwsh 7.2
+        ## see https://learn.microsoft.com/en-us/answers/questions/1329505/how-to-get-aks-powerstate-in-automation-account
         $powerState = $aksCluster.PowerState.Code   # can be Stopped and Started
+        if($null -eq $aksCluster.PowerState) {
+            Write-Output "`t> Get powerstate via Get-AzResource"
+            $aksResource = Get-AzResource -ResourceId $aksCluster.Id
+            $powerState = $aksResource.Properties.powerState.code
+        }
+
         Write-Output "`tPower state: $powerState" -Verbose
         $provisioningState = $aksCluster.ProvisioningState  # can be Succeeded
         Write-Output "`tProvisioning state: $provisioningState" -Verbose
