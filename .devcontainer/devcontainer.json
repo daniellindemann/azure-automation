@@ -11,7 +11,7 @@
 			"upgradePackages": "false",
 			"nonFreePackages": "true"
 		},
-		"ghcr.io/devcontainers/features/powershell:1": {
+		"ghcr.io/devcontainers/features/powershell:2": {
 			"version": "latest"
 		},
 		"ghcr.io/stuartleeks/dev-container-features/azure-cli-persistence:0": {},
